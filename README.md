@@ -10,6 +10,26 @@ using any standard C compiler. There are two files, the main code
 `radial.c` and a header `radial.h`. There is a third file `test.c`
 which runs test code to check the installation. 
 
+# Installation
+
+The code is deliberately simple and intended to be integrated into
+your own source code. To install the test program,
+
+`make`
+
+and to run it
+
+`./radial-test`
+
 # Usage
 
-The main function is `radial_derivatives`
+The main function is `radial_derivatives` which is called as:
+
+`radial_derivatives(N, x, y, z, D) ;`
+
+where $N$ is the highest order of derivative to be evaluated,
+$(x,y,z)$ is the vector whose length $r$ is to be differentiated. On
+exit, $D$ contains the scaled derivatives
+$(1/\ell!m!n!)\partial^{\ell+m+n}/\partial x^{\ell}\partial
+y^{m}\partial z^{n}$, i.e. the coefficients of the Taylor series for
+$R$ expanded about $(x,y,z)$. 
