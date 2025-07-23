@@ -44,3 +44,6 @@ y^{m}\partial z^{n}$ is located at
 
 `D[i], i = radial_offset(l+m+n) + radial_index(l,m,n)`
 
+The array $D$ must have at least `radial_offset(N+1)` elements. No
+other workspace is required. 
+
