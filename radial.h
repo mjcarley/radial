@@ -5,5 +5,6 @@
 #define radial_index(_l,_m,_n) ((_l)*(2*((_l)+(_m)+(_n))+3-(_l))/2+(_m))
 
 int radial_derivatives(int N, double x, double y, double z, double *D) ;
+double radial_evaluate(int N, double *D, double dx, double dy, double dz) ;
 
 #endif /*__RADIAL_H_INCLUDED__*/

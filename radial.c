@@ -176,3 +176,31 @@ int radial_derivatives(int N, double x, double y, double z, double *D)
 	  
   return 0 ;
 }
+
+double radial_evaluate(int N, double *D, double dx, double dy, double dz)
+
+{
+  int l, m, n, q, off, idx ;
+  double R, dxp[128], dyp[128], dzp[128] ;
+
+  R = 0 ;
+
+  dxp[0] = dyp[0] = dzp[0] = 1.0 ;
+  for ( q = 0 ; q <= N ; q ++ ) {
+    off = radial_offset(q) ;
+
+    dxp[q+1] = dxp[q]*dx ;
+    dyp[q+1] = dyp[q]*dy ;
+    dzp[q+1] = dzp[q]*dz ;
+
+    for ( l = 0 ; l <= q ; l ++ ) {
+      for ( m = 0 ; m <= q-l ; m ++ ) {
+	n = q - l - m ;
+	idx = radial_index(l,m,n) ;
+	R += D[off+idx]*dxp[l]*dyp[m]*dzp[n] ;
+      }
+    }
+  }
+  
+  return R ;
+}

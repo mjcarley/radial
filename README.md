@@ -21,6 +21,9 @@ and to run it
 
 `./radial-test`
 
+The test runs by evaluating derivatives at $(x,y,z)$ and comparing
+them to numerically differentiated derivatives. 
+
 # Usage
 
 The main function is `radial_derivatives` which is called as:

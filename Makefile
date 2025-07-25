@@ -1,4 +1,4 @@
-CC = gcc -g -Wall -O2
+CC = gcc -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
 LIBS = -lm
 
 all: radial-test

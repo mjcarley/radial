@@ -1,15 +1,17 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "radial.h"
 
 static double derivative_check(int N,
 			       double x, double y, double z,
-			       int d[], double ee, double *D)
+			       int d[], double ee, double *D,
+			       double *D1, double *D2)
   
 {
   int l, m, n, idx, jdx, off, q ;
-  double D1[8192], D2[8192], dr, sc, err ;
+  double dr, sc, err ;
 
   radial_derivatives(N-1, x+d[0]*ee/2, y+d[1]*ee/2, z+d[2]*ee/2, D1) ;
   radial_derivatives(N-1, x-d[0]*ee/2, y-d[1]*ee/2, z-d[2]*ee/2, D2) ;
@@ -38,13 +40,17 @@ static double derivative_check(int N,
 int main(int argc, char **argv)
 
 {
-  double D[8192],ee, x, y, z, err ;
+  double *D, *D1, *D2, ee, x, y, z, dx, dy, dz, err, R, Rc ;
   int N, d[3] ;
 
-  N = 32 ;
+  N = 40 ;
 
   x = 0.3 ; y = 1.9 ; z = -0.5 ;
   ee = 1e-5 ;
+
+  D  = (double *)malloc(radial_offset(N+1)*sizeof(double)) ;
+  D1 = (double *)malloc(radial_offset(N+1)*sizeof(double)) ;
+  D2 = (double *)malloc(radial_offset(N+1)*sizeof(double)) ;
   
   radial_derivatives(N, x, y, z, D) ;
 
@@ -52,17 +58,32 @@ int main(int argc, char **argv)
 
   fprintf(stderr, "derivatives w.r.t. x\n") ;
   d[0] = 1 ; d[1] = 0 ; d[2] = 0 ;
-  err = derivative_check(N, x, y, z, d, ee, D) ;
+  err = derivative_check(N, x, y, z, d, ee, D, D1, D2) ;
   fprintf(stderr, "maximum error = %lg\n\n", err) ;
+
   fprintf(stderr, "derivatives w.r.t. y\n") ;
   d[0] = 0 ; d[1] = 1 ; d[2] = 0 ;
-  err = derivative_check(N, x, y, z, d, ee, D) ;
+  err = derivative_check(N, x, y, z, d, ee, D, D1, D2) ;
   fprintf(stderr, "maximum error = %lg\n\n", err) ;
 
   fprintf(stderr, "derivatives w.r.t. z\n") ;
   d[0] = 0 ; d[1] = 0 ; d[2] = 1 ;
-  err = derivative_check(N, x, y, z, d, ee, D) ;
+  err = derivative_check(N, x, y, z, d, ee, D, D1, D2) ;
   fprintf(stderr, "maximum error = %lg\n\n", err) ;
 
+  /*evaluation of expansion for distance*/
+  err = 0.0 ;
+
+  for ( dx = -0.5 ; dx <= 0.5 ; dx += 0.5/32 ) {
+    for ( dy = -0.5 ; dy <= 0.5 ; dy += 0.5/32 ) {
+      for ( dz = -0.5 ; dz <= 0.5 ; dz += 0.5/32 ) {
+	R = radial_evaluate(N, D, dx, dy, dz) ;
+	Rc = sqrt((x+dx)*(x+dx) + (y+dy)*(y+dy) + (z+dz)*(z+dz)) ;
+	if ( fabs(Rc-R) > err ) err = fabs(Rc-R) ;
+      }
+    }
+  }
+  fprintf(stderr, "maximum error = %lg\n\n", err) ;
+  
   return 0 ;
 }
