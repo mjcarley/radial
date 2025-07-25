@@ -50,3 +50,15 @@ y^{m}\partial z^{n}$ is located at
 The array $D$ must have at least `radial_offset(N+1)` elements. No
 other workspace is required. 
 
+The expansion can be evaluated using
+
+`R = radial_evaluate(N, D, dx, dy, dz) ;`
+
+which finds 
+$$
+R \approx \sum
+\frac{1}{\ell!m!n!}
+\frac{\partial^{\ell+m+n}R}{\partial x^{\ell}\partial y^{m}\partial
+z^{n}}
+(\Delta x)^{\ell}(\Delta y)^{m}(\Delta z)^{n}
+$$
