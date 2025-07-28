@@ -6,5 +6,8 @@
 
 int radial_derivatives(int N, double x, double y, double z, double *D) ;
 double radial_evaluate(int N, double *D, double dx, double dy, double dz) ;
+double radial_evaluate_derivative(int N, double *D,
+				  double dx, double dy, double dz,
+				  int l, int m, int n) ;
 
 #endif /*__RADIAL_H_INCLUDED__*/

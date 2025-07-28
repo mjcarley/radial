@@ -20,6 +20,8 @@
 
 #include "radial.h"
 
+#define MAX(_a,_b)  (((_a) > (_b)) ? (_a) : (_b))
+
 int radial_derivatives(int N, double x, double y, double z, double *D)
 
 {
@@ -180,7 +182,7 @@ int radial_derivatives(int N, double x, double y, double z, double *D)
 double radial_evaluate(int N, double *D, double dx, double dy, double dz)
 
 {
-  int l, m, n, q, off, idx ;
+  int i, j, k, q, off, idx ;
   double R, dxp[128], dyp[128], dzp[128] ;
 
   R = 0 ;
@@ -193,11 +195,42 @@ double radial_evaluate(int N, double *D, double dx, double dy, double dz)
     dyp[q+1] = dyp[q]*dy ;
     dzp[q+1] = dzp[q]*dz ;
 
-    for ( l = 0 ; l <= q ; l ++ ) {
-      for ( m = 0 ; m <= q-l ; m ++ ) {
-	n = q - l - m ;
-	idx = radial_index(l,m,n) ;
-	R += D[off+idx]*dxp[l]*dyp[m]*dzp[n] ;
+    for ( i = 0 ; i <= q ; i ++ ) {
+      for ( j = 0 ; j <= q-i ; j ++ ) {
+	k = q - i - j ;
+	idx = radial_index(i,j,k) ;
+	R += D[off+idx]*dxp[i]*dyp[j]*dzp[k] ;
+      }
+    }
+  }
+  
+  return R ;
+}
+
+double radial_evaluate_derivative(int N, double *D,
+				  double dx, double dy, double dz,
+				  int l, int m, int n)
+
+{
+  int i, j, k, q, off, idx ;
+  double R, dxp[128]={0}, dyp[128]={0}, dzp[128]={0} ;
+
+  R = 0 ;
+
+  dxp[l] = tgamma(l+1) ; dyp[m] = tgamma(m+1) ; dzp[n] = tgamma(n+1) ;
+
+  for ( i = l ; i < N ; i ++ ) dxp[i+1] = (double)(i+1)/(i-l+1)*dx*dxp[i] ;
+  for ( j = m ; j < N ; j ++ ) dyp[j+1] = (double)(j+1)/(j-m+1)*dy*dyp[j] ;
+  for ( k = n ; k < N ; k ++ ) dzp[k+1] = (double)(k+1)/(k-n+1)*dz*dzp[k] ;
+  
+  for ( q = 0 ; q <= N ; q ++ ) {
+    off = radial_offset(q) ;
+
+    for ( i = 0 ; i <= q ; i ++ ) {
+      for ( j = 0 ; j <= q-i ; j ++ ) {
+	k = q - i - j ;
+	idx = radial_index(i,j,k) ;
+	R += D[off+idx]*dxp[i]*dyp[j]*dzp[k] ;
       }
     }
   }
